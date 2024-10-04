@@ -20,7 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.751"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/myEdit"
+        app:layout_constraintTop_toBottomOf="@+id/driverName"
         app:rippleColor="#DF0707"
         app:strokeColor="#B80F0F" />
 
@@ -29,11 +29,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:hint="Input"
+        android:hint="Название"
         android:inputType="text"
         android:minHeight="48dp"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="11dp" />
+
+    <EditText
+        android:id="@+id/driverName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:ems="10"
+        android:hint="Имя владельца"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/carNumber" />
 
     <CheckBox
         android:id="@+id/isNewCar"
@@ -43,24 +55,27 @@
         android:text="электрокар"
         app:layout_constraintEnd_toStartOf="@+id/addBtn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/myEdit" />
+        app:layout_constraintTop_toBottomOf="@+id/driverName" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="389dp"
-        android:layout_height="389dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ListView
+        android:id="@+id/userlist"
+        android:layout_width="379dp"
+        android:layout_height="623dp"
+        android:layout_margin="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/addBtn"
+        tools:layout_editor_absoluteX="11dp"></ListView>
+
+    <EditText
+        android:id="@+id/carNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:ems="10"
+        android:hint="Пробег"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addBtn">
-
-        <ListView
-            android:id="@+id/userlist"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"></ListView>
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/myEdit" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

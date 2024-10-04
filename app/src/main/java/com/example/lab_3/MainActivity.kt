@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         val checkBoxNewCar = findViewById<CheckBox>(R.id.isNewCar)
+        val carNumber = findViewById<EditText>(R.id.carNumber)
+        val driverName = findViewById<EditText>(R.id.driverName)
         var cars = mutableListOf<Car>()
         var cars_names = mutableListOf<String>()
         var carsMap : MutableMap <String, Int> = mutableMapOf()
@@ -46,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         addButton.setOnClickListener {
             val carName = myTxt.text.toString()
-            if (carName.isEmpty()) {
+            if (carName.isEmpty() || carNumber.text.toString().isEmpty()||driverName.text.toString().isEmpty()) {
                 toastShow("Строка пуста")
             } else if (carsMap.containsKey(carName)) {
                 toastShow("Имя уже занято")
@@ -58,9 +60,9 @@ class MainActivity : AppCompatActivity() {
                     mode = true
                     carType = "Электрокар"
                 }
-                val newCar = Car(carName,mode,1)
+                val newCar = Car(carName,mode, carNumber.text.toString().toInt(),driverName.text.toString())
                 cars.add(newCar)
-                cars_names.add(carName)
+                cars_names.add("Название:" + carName + "\nПробег:" + carNumber.text.toString() + "\nИмя водителя:" + driverName.text.toString())
                 carsMap.put(carName, newCar.hashCode())
                 myTxt.text.clear()
                 arrayAdapter.notifyDataSetChanged()
