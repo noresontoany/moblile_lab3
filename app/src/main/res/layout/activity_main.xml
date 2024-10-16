@@ -68,6 +68,11 @@
                 android:layout_margin="30dp"
                 android:text="электрокар" />
 
+            <ListView
+                android:id="@+id/hah"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
         </LinearLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView

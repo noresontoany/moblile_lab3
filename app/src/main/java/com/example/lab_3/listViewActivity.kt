@@ -1,19 +1,22 @@
 package com.example.lab_3
 
 import Logic.Car
-import android.content.Intent
+import Logic.carHolder
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class listViewActivity : AppCompatActivity() {
-
+//    private var carData: carHolder = application as carHolder
+    private var cars : List<Car> = emptyList()
+    private var carDescription  = mutableListOf<String>()
+    private var carNames : Set<String> = emptySet()
+//    private var arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayOf(carDescription))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -24,54 +27,27 @@ class listViewActivity : AppCompatActivity() {
             insets
 
         }
-
-        val listOfCars = findViewById<ListView>(R.id.listViewCars)
-
-        val carNames = intent.getStringArrayListExtra("car_names")
-
-//        val carNames = arrayOf("qwe","qwe","qwe","qwe","qwe","qwe","qwe","qwe","qwe","qwe","qwe","qwelats","qwe","qwe","qwe","qwe","qwelats","qwe","qwe","qwe","qwe","qwelats","qwe","qwe","qwe","qwe","qwelats")
-        var cars =  ArrayList(intent.extras?.getParcelableArrayList<Car>("cars"))
-
-        var arrayAdapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1, listOf("Пусто")
-        )
-        if (carNames != null)
-        {
-            arrayAdapter = ArrayAdapter(
-                this,
-                android.R.layout.simple_list_item_1, carNames
-            )
-        }
-
-        listOfCars.adapter = arrayAdapter
-
-        listOfCars.setOnItemClickListener { parent, view, position, id ->
-            toastShow(position.toString())
-            val switchActivityIntent = Intent(
-                this,
-                carDescriptionActivity::class.java,
-                )
-            val car = cars?.get(id.toInt())
-            switchActivityIntent.putExtra("car", car)
-            val ll = startActivityForResult(switchActivityIntent, REQUEST_CODE_EDIT)
+        val carData = application as carHolder
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, carDescription)
+        carData.getSharedData().observe(this) { data ->
+            val tempCars = carData.getCars() ?: emptyList()
+            cars = tempCars
+            val tempDescription = carData.getCarDescriptions()
+            carDescription.addAll(tempDescription)
+            val tempCarNames = carData.getCarNames()
+            carNames = tempCarNames.toSet()
             arrayAdapter.notifyDataSetChanged()
         }
 
+        val listOfCars = findViewById<ListView>(R.id.listViewCars)
+
+        listOfCars.adapter = arrayAdapter
     }
-
-
-
 
     private fun toastShow(message: String)
     {
         val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT)
         toast.show()
     }
-
-    companion object{
-        const val REQUEST_CODE_EDIT = 0
-    }
-
 
 }
