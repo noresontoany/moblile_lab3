@@ -14,7 +14,7 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/myEdit"
+            android:id="@+id/carNameAdd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -23,7 +23,7 @@
             android:minHeight="48dp" />
 
         <EditText
-            android:id="@+id/driverName"
+            android:id="@+id/driverNameAdd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -33,7 +33,7 @@
             android:minHeight="48dp" />
 
         <EditText
-            android:id="@+id/carNumber"
+            android:id="@+id/carMiliageAdd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -48,30 +48,13 @@
             android:layout_margin="16dp"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/addBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="30dp"
-                android:shadowColor="#E11818"
-                android:text="add"
-                android:textColor="@android:color/white"
-                app:rippleColor="#DF0707"
-                app:strokeColor="#B80F0F" />
-
             <CheckBox
-                android:id="@+id/isNewCar"
+                android:id="@+id/carTypeAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="30dp"
                 android:text="электрокар" />
-
-            <ListView
-                android:id="@+id/hah"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
 
         </LinearLayout>
 
@@ -85,7 +68,19 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btn_listView"
+                    android:id="@+id/addCArBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="30dp"
+                    android:shadowColor="#E11818"
+                    android:text="@string/add"
+                    android:textColor="@android:color/white"
+                    app:rippleColor="#DF0707"
+                    app:strokeColor="#B80F0F" />
+
+                <Button
+                    android:id="@+id/btnCarListView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

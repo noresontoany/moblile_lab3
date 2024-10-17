@@ -24,7 +24,7 @@ class carHolder : Application() {
         for (el in cars.value!!)
         {
             var s = el.name + " - ";
-            if (el.isElectro)
+            if (el.carType)
                 s += "электрокар"
             else
                 s += "автомобиль"
@@ -49,13 +49,15 @@ class carHolder : Application() {
     {
         val currentCars = cars.value ?: emptyList()
         cars.value = currentCars + car // Создаём новый список
-        
-
     }
-
+    fun getCar(id: Int) : Car
+    {
+        return cars.value!![id]
+    }
     fun updateCar(id: Int, car: Car)
     {
-        val currentCars = cars.value ?: emptyList()
-//        currentCars[id]  = car
+        var currentCars = (cars.value ?: emptyList()).toMutableList()
+        currentCars[id] = car
+        cars.value = currentCars.toList()
     }
 }
