@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class listViewActivity : AppCompatActivity() {
     private var carDescription  = mutableListOf<String>()
@@ -27,11 +28,15 @@ class listViewActivity : AppCompatActivity() {
 
         }
 
-        val btnBack = findViewById<Button>(R.id.btn_back)
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation2)
 
 
         val carData = application as carHolder
         val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, carDescription)
+        val menu = bottomNavigationView.menu
+        val prevItem = menu.findItem(R.id.navigation_view)
+        prevItem.isVisible = false
+
         carData.getSharedData().observe(this) { data ->
             val tempDescription = carData.getCarDescriptions()
             arrayAdapter.clear()
@@ -53,8 +58,24 @@ class listViewActivity : AppCompatActivity() {
 
         }
 
-        btnBack.setOnClickListener {
-            finish()
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_previous -> {
+                    onBackPressed()
+                    true
+                }
+                R.id.navigation_view -> {
+                    val intent = Intent(this, listViewActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.navigation_add -> {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
         }
 
     }

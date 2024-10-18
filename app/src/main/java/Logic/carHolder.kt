@@ -5,19 +5,19 @@ import androidx.lifecycle.MutableLiveData
 
 class carHolder : Application() {
     private val cars : MutableLiveData<List<Car>> = MutableLiveData()
+//    fun setSharedData(arr : List<Car>)
+//    {
+//        this.cars.value = arr
+//    }
     fun getSharedData(): MutableLiveData<List<Car>>
     {
         return cars
     }
-    fun setSharedData(arr : List<Car>)
-    {
-        this.cars.value = arr
-    }
-
-    fun getCars() : List<Car>?
-    {
-        return cars.value
-    }
+//
+//    fun getCars() : List<Car>?
+//    {
+//        return cars.value
+//    }
     fun getCarDescriptions(): List<String>
     {
             val temp =  mutableListOf<String>()

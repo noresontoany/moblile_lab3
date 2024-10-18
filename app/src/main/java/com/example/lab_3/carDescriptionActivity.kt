@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class carDescriptionActivity : AppCompatActivity() {
 
@@ -31,11 +32,11 @@ class carDescriptionActivity : AppCompatActivity() {
             Toast.makeText(this, "ahahahaha", Toast.LENGTH_SHORT).show()
             finish()
         }
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation3)
         val text_Name = findViewById<EditText>(R.id.carNameEdit)
         val text_DriverName = findViewById<EditText>(R.id.driverNameEdit)
         val text_CarMiliage = findViewById<EditText>(R.id.carMiliageEdit)
         val check_carType = findViewById<CheckBox>(R.id.carTypeEdit)
-        val back = findViewById<Button>(R.id.btnBackToCarListView)
         val edit = findViewById<Button>(R.id.btnCarEdit)
         val carData = application as carHolder
         var car = carData.getCar(idCar)
@@ -56,11 +57,27 @@ class carDescriptionActivity : AppCompatActivity() {
             text_CarMiliage.text.clear()
         }
 
-
-
-        back.setOnClickListener {
-            finish()
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_previous -> {
+                    onBackPressed()
+                    true
+                }
+                R.id.navigation_view -> {
+                    val intent = Intent(this, listViewActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.navigation_add -> {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
         }
+
+
 
     }
 

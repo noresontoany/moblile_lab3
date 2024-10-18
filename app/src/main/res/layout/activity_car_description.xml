@@ -7,91 +7,83 @@
     android:layout_height="match_parent"
     tools:context=".carDescriptionActivity">
 
-    <LinearLayout
-        android:id="@+id/linearDescription"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/carNameEdit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="Название"
-            android:inputType="text"
-            android:minHeight="48dp" />
-
-        <EditText
-            android:id="@+id/driverNameEdit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:ems="10"
-            android:hint="Имя владельца"
-            android:inputType="text"
-            android:minHeight="48dp" />
-
-        <EditText
-            android:id="@+id/carMiliageEdit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:ems="10"
-            android:hint="Пробег"
-            android:inputType="number"
-            android:minHeight="48dp" />
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/linearDescription2"
-            android:layout_width="392dp"
-            android:layout_height="215dp"
-            android:layout_margin="16dp"
-            android:orientation="horizontal">
+            android:id="@+id/linearDescription"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnCarEdit"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/carNameEdit"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="30dp"
-                android:shadowColor="#E11818"
-                android:text="edit"
-                android:textColor="@android:color/white"
-                app:rippleColor="#DF0707"
-                app:strokeColor="#B80F0F" />
+                android:layout_margin="16dp"
+                android:hint="Название"
+                android:inputType="text"
+                android:minHeight="48dp" />
 
-            <CheckBox
-                android:id="@+id/carTypeEdit"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/driverNameEdit"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="30dp"
-                android:text="электрокар" />
+                android:layout_margin="16dp"
+                android:ems="10"
+                android:hint="Имя владельца"
+                android:inputType="text"
+                android:minHeight="48dp" />
+
+            <EditText
+                android:id="@+id/carMiliageEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:ems="10"
+                android:hint="Пробег"
+                android:inputType="number"
+                android:minHeight="48dp" />
+
+            <LinearLayout
+                android:id="@+id/linearDescription2"
+                android:layout_width="392dp"
+                android:layout_height="215dp"
+                android:layout_margin="16dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnCarEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="30dp"
+                    android:shadowColor="#E11818"
+                    android:text="edit"
+                    android:textColor="@android:color/white"
+                    app:rippleColor="#DF0707"
+                    app:strokeColor="#B80F0F" />
+
+                <CheckBox
+                    android:id="@+id/carTypeEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="30dp"
+                    android:text="электрокар" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bnvDescription"
-            android:layout_width="387dp"
-            android:layout_height="109dp">
+            android:id="@+id/bottom_navigation3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/linearDescription"
+            app:menu="@menu/bottom_nav_menu" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/linearDescription3"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnBackToCarListView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Button" />
-
-            </LinearLayout>
-
-        </com.google.android.material.bottomnavigation.BottomNavigationView>
-
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,63 +8,49 @@
     tools:context=".MainActivity">
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/carNameAdd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="Название"
-            android:inputType="text"
-            android:minHeight="48dp" />
-
-        <EditText
-            android:id="@+id/driverNameAdd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:ems="10"
-            android:hint="Имя владельца"
-            android:inputType="text"
-            android:minHeight="48dp" />
-
-        <EditText
-            android:id="@+id/carMiliageAdd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:ems="10"
-            android:hint="Пробег"
-            android:inputType="number"
-            android:minHeight="48dp" />
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="392dp"
-            android:layout_height="215dp"
-            android:layout_margin="16dp"
-            android:orientation="horizontal">
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <CheckBox
-                android:id="@+id/carTypeAdd"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/carNameAdd"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="30dp"
-                android:text="электрокар" />
+                android:layout_margin="16dp"
+                android:hint="Название"
+                android:inputType="text"
+                android:minHeight="48dp" />
 
-        </LinearLayout>
+            <EditText
+                android:id="@+id/driverNameAdd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:ems="10"
+                android:hint="Имя владельца"
+                android:inputType="text"
+                android:minHeight="48dp" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:layout_width="387dp"
-            android:layout_height="109dp">
+            <EditText
+                android:id="@+id/carMiliageAdd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:ems="10"
+                android:hint="Пробег"
+                android:inputType="number"
+                android:minHeight="48dp" />
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="392dp"
+                android:layout_height="215dp"
+                android:layout_margin="16dp"
                 android:orientation="horizontal">
 
                 <Button
@@ -79,18 +65,26 @@
                     app:rippleColor="#DF0707"
                     app:strokeColor="#B80F0F" />
 
-                <Button
-                    android:id="@+id/btnCarListView"
+                <CheckBox
+                    android:id="@+id/carTypeAdd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Button" />
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="30dp"
+                    android:text="электрокар" />
 
             </LinearLayout>
 
-        </com.google.android.material.bottomnavigation.BottomNavigationView>
+        </LinearLayout>
 
-    </LinearLayout>
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
+            app:menu="@menu/bottom_nav_menu" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

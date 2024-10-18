@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,13 +30,16 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val btnListView = findViewById<Button>(R.id.btnCarListView)
         val checkBoxNewCar = findViewById<CheckBox>(R.id.carTypeAdd)
         val carNumber = findViewById<EditText>(R.id.carMiliageAdd)
         val driverName = findViewById<EditText>(R.id.driverNameAdd)
         val myTxt = findViewById<EditText>(R.id.carNameAdd)
         val addButton = findViewById<Button>(R.id.addCArBtn)
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
+        val menu = bottomNavigationView.menu
+        val addItem = menu.findItem(R.id.navigation_add)
+        addItem.isVisible = false
 
         val carData: carHolder = application as carHolder
         carData.getSharedData().observe(this) { data ->
@@ -63,16 +67,29 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-        btnListView.setOnClickListener {
-            val switchActivityIntent = Intent(
-                this,
-                listViewActivity::class.java,
 
-            )
-            startActivity(switchActivityIntent)
-
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_previous -> {
+                    onBackPressed()
+                    true
+                }
+                R.id.navigation_view -> {
+                    val intent = Intent(this, listViewActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.navigation_add -> {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
         }
     }
+
+
 
     private fun toastShow(message: String)
     {
