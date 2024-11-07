@@ -40,29 +40,43 @@ class carDescriptionActivity : AppCompatActivity() {
         val edit = findViewById<Button>(R.id.btnCarEdit)
         val carData = application as carHolder
         var car = carData.getCar(idCar)
+
         carData.getSharedData().observe(this) { data ->
+
             car = carData.getCar(idCar)
+
+
+
             text_Name.hint = car.name
             text_DriverName.hint = car.driverName
             text_CarMiliage.hint = car.carMiliage.toString()
             check_carType.isChecked = car.carType
+
+
+
         }
 
 
         edit.setOnClickListener {
-            val newCar = createCar(text_Name, text_DriverName, text_CarMiliage, check_carType, car)
-            carData.updateCar(idCar,newCar)
-            text_Name.text.clear()
-            text_DriverName.text.clear()
-            text_CarMiliage.text.clear()
+
+            val setOfNames = carData.getCarNames()
+
+            if (text_Name.text.toString() in setOfNames)
+            {
+                Toast.makeText(this, "Имя занято !!", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                val newCar = createCar(text_Name, text_DriverName, text_CarMiliage, check_carType, car)
+                carData.updateCar(idCar, newCar)
+                text_Name.text.clear()
+                text_DriverName.text.clear()
+                text_CarMiliage.text.clear()
+
+            }
         }
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_previous -> {
-                    onBackPressed()
-                    true
-                }
                 R.id.navigation_view -> {
                     val intent = Intent(this, listViewActivity::class.java)
                     startActivity(intent)
@@ -76,6 +90,8 @@ class carDescriptionActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+
 
 
 
@@ -102,5 +118,11 @@ class carDescriptionActivity : AppCompatActivity() {
 
         val newCar = Car(carName, cType, carCarMiliage.toInt(), carDriverName)
         return newCar
+    }
+
+    override fun onRestart() {
+
+        super.onRestart()
+
     }
 }

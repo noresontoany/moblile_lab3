@@ -5,6 +5,9 @@ import Logic.carHolder
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.ContextMenu
+import android.view.Menu
+import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -29,13 +32,13 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         val checkBoxNewCar = findViewById<CheckBox>(R.id.carTypeAdd)
         val carNumber = findViewById<EditText>(R.id.carMiliageAdd)
         val driverName = findViewById<EditText>(R.id.driverNameAdd)
         val myTxt = findViewById<EditText>(R.id.carNameAdd)
         val addButton = findViewById<Button>(R.id.addCArBtn)
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+
 
         val menu = bottomNavigationView.menu
         val addItem = menu.findItem(R.id.navigation_add)
@@ -70,10 +73,6 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_previous -> {
-                    onBackPressed()
-                    true
-                }
                 R.id.navigation_view -> {
                     val intent = Intent(this, listViewActivity::class.java)
                     startActivity(intent)
@@ -96,6 +95,8 @@ class MainActivity : AppCompatActivity() {
         val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT)
         toast.show()
     }
+
+
 
 
 

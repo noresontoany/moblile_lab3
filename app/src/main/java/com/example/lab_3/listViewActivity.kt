@@ -1,22 +1,36 @@
 package com.example.lab_3
 
-import Logic.Car
+import Interfaces.OnItemClickListner
 import Logic.carHolder
+import Views.CustomRecyclerAdapter
 import android.content.Intent
 import android.os.Bundle
+import android.view.ContextMenu
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Button
+import android.widget.ImageView
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class listViewActivity : AppCompatActivity() {
-    private var carDescription  = mutableListOf<String>()
 
+class listViewActivity : AppCompatActivity(), OnItemClickListner {
+    private lateinit var adapter: CustomRecyclerAdapter
+    private var selectedPosition = -1
+    private var lastRedacted = -1
+    companion object {
+        const val IDM_DELETE = 101
+        const val IDM = 102
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,43 +41,25 @@ class listViewActivity : AppCompatActivity() {
             insets
 
         }
-
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation2)
 
-
+        val recycler = findViewById<RecyclerView>(R.id.recyclerView)
+        adapter = CustomRecyclerAdapter(this)
+        recycler.adapter = adapter
+        recycler.layoutManager =  GridLayoutManager(this, 2)
         val carData = application as carHolder
-        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, carDescription)
         val menu = bottomNavigationView.menu
+        registerForContextMenu(bottomNavigationView);
+
         val prevItem = menu.findItem(R.id.navigation_view)
         prevItem.isVisible = false
 
         carData.getSharedData().observe(this) { data ->
             val tempDescription = carData.getCarDescriptions()
-            arrayAdapter.clear()
-            carDescription.addAll(tempDescription)
-            arrayAdapter.notifyDataSetChanged()
+            adapter.data = data.toList()
         }
-        val listOfCars = findViewById<ListView>(R.id.listViewCars)
-        listOfCars.adapter = arrayAdapter
-
-        listOfCars.setOnItemClickListener { parent, view, position, id ->
-            val switchActivityIntent = Intent(
-                this,
-                carDescriptionActivity::class.java,
-
-                )
-
-            switchActivityIntent.putExtra("id", id.toInt())
-            startActivity(switchActivityIntent)
-
-        }
-
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_previous -> {
-                    onBackPressed()
-                    true
-                }
                 R.id.navigation_view -> {
                     val intent = Intent(this, listViewActivity::class.java)
                     startActivity(intent)
@@ -80,5 +76,53 @@ class listViewActivity : AppCompatActivity() {
 
     }
 
+
+    override fun onItemCLik(pos: Int) {
+        val switchActivityIntent = Intent(
+                this,
+                carDescriptionActivity::class.java,
+                )
+            lastRedacted = pos
+            switchActivityIntent.putExtra("id", pos)
+            startActivity(switchActivityIntent)
+
+    }
+
+    override fun onContextMenu(view: ImageView, pos: Int) {
+        registerForContextMenu(view)
+        selectedPosition = pos
+        Toast.makeText(this, selectedPosition.toString(), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onCreateContextMenu(
+        menu: ContextMenu?,
+        v: View?,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+
+        menu?.add(Menu.NONE, IDM_DELETE, Menu.NONE, "Удалить")
+
+
+    }
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+
+        return when (item.itemId) {
+            IDM_DELETE -> {
+                if (selectedPosition != -1) {
+                    val carData = application as carHolder
+                    carData.deleteCar(selectedPosition) // удаляем элемент
+                    Toast.makeText(this, "Элемент удален", Toast.LENGTH_SHORT).show()
+                }
+
+                false
+            }
+            else -> super.onContextItemSelected(item)
+        }
+    }
+
+    override fun onMenuItemCLick(men: MenuItem) {
+        Toast.makeText(this, "ЕЩЕ РАЗ", Toast.LENGTH_SHORT).show()
+    }
 
 }

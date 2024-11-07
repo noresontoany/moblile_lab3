@@ -1,26 +1,22 @@
 package Logic
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 
 class carHolder : Application() {
     private val cars : MutableLiveData<List<Car>> = MutableLiveData()
-//    fun setSharedData(arr : List<Car>)
-//    {
-//        this.cars.value = arr
-//    }
+    fun setSharedData(arr : List<Car>)
+    {
+        this.cars.value = arr
+    }
     fun getSharedData(): MutableLiveData<List<Car>>
     {
         return cars
     }
-//
-//    fun getCars() : List<Car>?
-//    {
-//        return cars.value
-//    }
     fun getCarDescriptions(): List<String>
     {
-            val temp =  mutableListOf<String>()
+        val temp =  mutableListOf<String>()
         for (el in cars.value!!)
         {
             var s = el.name + " - ";
@@ -59,5 +55,14 @@ class carHolder : Application() {
         var currentCars = (cars.value ?: emptyList()).toMutableList()
         currentCars[id] = car
         cars.value = currentCars.toList()
+    }
+    fun deleteCar(id: Int)
+    {
+        var currentCars = (cars.value ?: emptyList()).toMutableList()
+        currentCars.removeAt(id)
+        cars.value = currentCars.toList()
+        if (id != 0) {
+            Toast.makeText(this, "Пытались удалить" + id.toString(), Toast.LENGTH_SHORT).show()
+        }
     }
 }
