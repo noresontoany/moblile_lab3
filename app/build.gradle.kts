@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.lab_3"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -42,7 +42,16 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.ui.desktop)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation(kotlin("reflect"))
+    implementation("org.apache.poi:poi:5.2.3")       // Для работы с .xls файлами
+    implementation("org.apache.poi:poi-ooxml:5.2.3") // Для работы с .xlsx файлами
+//    implementation("org.apache.logging.log4j:log4j-api:2.20.0")
+//    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+//    implementation ("org.apache.logging.log4j:log4j-slf4j-impl:2.20.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
 }

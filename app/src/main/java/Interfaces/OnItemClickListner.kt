@@ -4,8 +4,8 @@ import android.view.MenuItem
 import android.widget.ImageView
 
 interface OnItemClickListner {
-    fun onItemCLik(pos: Int)
-    fun onContextMenu(imageView: ImageView, pos: Int)
+    fun onItemCLik(id: String)
+    fun onContextMenu(imageView: ImageView, id: String)
 
     fun onMenuItemCLick(item: MenuItem);
 

@@ -27,8 +27,9 @@ class carDescriptionActivity : AppCompatActivity() {
             insets
         }
 
-        val idCar = intent.getIntExtra("id", -1)
-        if (idCar == -1) {
+        val idCar = intent.getStringExtra("id")
+
+        if (idCar == "-1") {
             Toast.makeText(this, "ahahahaha", Toast.LENGTH_SHORT).show()
             finish()
         }
@@ -39,7 +40,7 @@ class carDescriptionActivity : AppCompatActivity() {
         val check_carType = findViewById<CheckBox>(R.id.carTypeEdit)
         val edit = findViewById<Button>(R.id.btnCarEdit)
         val carData = application as carHolder
-        var car = carData.getCar(idCar)
+        var car = carData.getCar(idCar!!)
 
         carData.getSharedData().observe(this) { data ->
 

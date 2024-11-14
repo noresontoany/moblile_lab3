@@ -65,6 +65,12 @@
                     app:rippleColor="#DF0707"
                     app:strokeColor="#B80F0F" />
 
+                <Button
+                    android:id="@+id/buttonSaveFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="save list in file" />
+
                 <CheckBox
                     android:id="@+id/carTypeAdd"
                     android:layout_width="wrap_content"

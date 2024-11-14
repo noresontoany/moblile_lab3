@@ -10,23 +10,26 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class listViewActivity : AppCompatActivity(), OnItemClickListner {
     private lateinit var adapter: CustomRecyclerAdapter
-    private var selectedPosition = -1
-    private var lastRedacted = -1
+    private var selectedItemId = ""
+    private var lastRedactedId = ""
     companion object {
         const val IDM_DELETE = 101
         const val IDM = 102
@@ -36,6 +39,7 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
         enableEdgeToEdge()
         setContentView(R.layout.activity_list_view)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -45,6 +49,7 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
 
         val recycler = findViewById<RecyclerView>(R.id.recyclerView)
         adapter = CustomRecyclerAdapter(this)
+
         recycler.adapter = adapter
         recycler.layoutManager =  GridLayoutManager(this, 2)
         val carData = application as carHolder
@@ -54,10 +59,17 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
         val prevItem = menu.findItem(R.id.navigation_view)
         prevItem.isVisible = false
 
-        carData.getSharedData().observe(this) { data ->
-            val tempDescription = carData.getCarDescriptions()
-            adapter.data = data.toList()
+        val filterB = findViewById<FloatingActionButton>(R.id.filterButton)
+        filterB.setOnClickListener {
+            showFilterSortDialog()
         }
+
+        carData.getSharedData().observe(this) { data ->
+//            val tempDescription = carData.getCarDescriptions()
+            adapter.data = data
+        }
+        adapter.filters = carData.filters
+        adapter.filter()
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_view -> {
@@ -70,6 +82,7 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
                     startActivity(intent)
                     true
                 }
+
                 else -> false
             }
         }
@@ -77,21 +90,21 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
     }
 
 
-    override fun onItemCLik(pos: Int) {
+    override fun onItemCLik(id: String) {
         val switchActivityIntent = Intent(
                 this,
                 carDescriptionActivity::class.java,
                 )
-            lastRedacted = pos
-            switchActivityIntent.putExtra("id", pos)
+            lastRedactedId = id
+            switchActivityIntent.putExtra("id", lastRedactedId)
             startActivity(switchActivityIntent)
 
     }
 
-    override fun onContextMenu(view: ImageView, pos: Int) {
+    override fun onContextMenu(view: ImageView, id: String) {
         registerForContextMenu(view)
-        selectedPosition = pos
-        Toast.makeText(this, selectedPosition.toString(), Toast.LENGTH_SHORT).show()
+        selectedItemId = id
+        Toast.makeText(this, selectedItemId, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateContextMenu(
@@ -109,12 +122,11 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
 
         return when (item.itemId) {
             IDM_DELETE -> {
-                if (selectedPosition != -1) {
+                if (selectedItemId != "") {
                     val carData = application as carHolder
-                    carData.deleteCar(selectedPosition) // удаляем элемент
+                    carData.deleteCar(selectedItemId) // удаляем элемент
                     Toast.makeText(this, "Элемент удален", Toast.LENGTH_SHORT).show()
                 }
-
                 false
             }
             else -> super.onContextItemSelected(item)
@@ -124,5 +136,58 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
     override fun onMenuItemCLick(men: MenuItem) {
         Toast.makeText(this, "ЕЩЕ РАЗ", Toast.LENGTH_SHORT).show()
     }
+
+
+
+
+
+    private fun showFilterSortDialog() {
+        val carData = application as carHolder
+        val items = carData.filters_names
+        val checkedItems = carData.filters
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Filter and Sort Options")
+            .setMultiChoiceItems(items, checkedItems) { dialog, which, isChecked ->
+                // Обновляем состояние выбранного элемента
+                checkedItems[which] = isChecked
+            }
+            .setPositiveButton("Apply") { dialog, _ ->
+                carData.filters = checkedItems
+                adapter.filters = checkedItems
+                adapter.filter()
+                applyFiltersAndSort(checkedItems)
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+
+                dialog.dismiss() // Закрыть диалог при отмене
+            }
+            .show()
+
+//        carData.cars.value = carData.cars.value
+//        carData.saveFilterData()
+    }
+    private fun applyFiltersAndSort(checkedItems: BooleanArray) {
+        if (checkedItems[0]) sortCarsByDescending() // Sort by Descending
+        if (checkedItems[1]) showOnlyElectricCars() // Show Only Electric Cars
+        if (checkedItems[2]) showOnlyNonElectricCars() // Show Only Non-Electric Cars
+    }
+
+    private fun sortCarsByDescending() {
+        Toast.makeText(this, "Sorted by Descending Mileage", Toast.LENGTH_SHORT).show()
+    }
+
+//    private fun showAllCars() {
+//        Toast.makeText(this, "Showing All Cars", Toast.LENGTH_SHORT).show()
+//    }
+
+    private fun showOnlyElectricCars() {
+
+        Toast.makeText(this, "Showing Only Electric Cars", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showOnlyNonElectricCars() {
+        Toast.makeText(this, "Showing Only Non-Electric Cars", Toast.LENGTH_SHORT).show()
+    }
+
 
 }

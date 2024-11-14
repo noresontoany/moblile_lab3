@@ -1,7 +1,14 @@
 package Logic
-
-data class Car(val name: String?, var carType: Boolean, var carMiliage: Int, var driverName: String?)
+import java.util.UUID
+data class Car(
+    var name: String?,
+    var carType: Boolean,
+    var carMiliage: Int,
+    var driverName: String?
+)
 {
+    val  id: String = UUID.randomUUID().toString()
+//    val  id: String = "UUID.randomUUID().toString()"
     fun getCarDescription(): String
     {
         var s = this.name + " - ";
