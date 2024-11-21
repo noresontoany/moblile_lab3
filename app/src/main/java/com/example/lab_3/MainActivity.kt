@@ -3,8 +3,12 @@ package com.example.lab_3
 import Logic.Car
 import Logic.carHolder
 import android.annotation.SuppressLint
+import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -18,6 +22,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -114,6 +119,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         loadInputs()
+        test()
         super.onResume()
     }
 
@@ -124,33 +130,68 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun saveInputs()
-    {
+    private fun saveInputs() {
         val carNameTextInput = findViewById<EditText>(R.id.carNameAdd)
         val driverNameTextInput = findViewById<EditText>(R.id.driverNameAdd)
         val carNumberIntInput = findViewById<EditText>(R.id.carMiliageAdd)
         val checkBoxNewCar = findViewById<CheckBox>(R.id.carTypeAdd)
 
-        try {
-            val file = File(filesDir, "mainActivityCache.dat")
+        val resolver = this.contentResolver
 
-            val fos = FileOutputStream(file, false)
+        val fileName = "mainActivityCache.dat"
+        val relativePath = Environment.DIRECTORY_DOWNLOADS
 
-            fos.write((carNameTextInput.text.toString() + "\n").toByteArray())
-            fos.write((checkBoxNewCar.isChecked.toString() + "\n").toByteArray())
-            fos.write((carNumberIntInput.text.toString() + "\n").toByteArray())
-            fos.write((driverNameTextInput.text.toString() + "\n").toByteArray())
+        val queryUri = MediaStore.Files.getContentUri("external")
 
-            fos.close()
+        val selection = "${MediaStore.Files.FileColumns.DISPLAY_NAME} = ? AND ${MediaStore.Files.FileColumns.RELATIVE_PATH} = ?"
+        val selectionArgs = arrayOf(fileName, "$relativePath/")
 
-            toastShow("Данные сохранены в файл")
-        } catch (e: IOException) {
-            e.printStackTrace()
-            toastShow("Ошибка при сохранении данных")
+        val cursor = resolver.query(
+            queryUri,
+            arrayOf(MediaStore.Files.FileColumns._ID), // Берём только ID файла
+            selection,
+            selectionArgs,
+            null
+        )
+
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val fileId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+                val fileUri = ContentUris.withAppendedId(queryUri, fileId)
+                resolver.delete(fileUri, null, null)
+            }
         }
 
-    }
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, "mainActivityCache.dat")
+            put(
+                MediaStore.MediaColumns.RELATIVE_PATH,
+                Environment.DIRECTORY_DOWNLOADS
+            )
+            put(
+                MediaStore.Files.FileColumns.MIME_TYPE,
+                "application/octet-stream"
+            )
+        }
 
+        val uri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+
+        uri?.let {
+            resolver.openOutputStream(it)?.use { outputStream ->
+
+                outputStream.write((carNameTextInput.text.toString() + "\n").toByteArray())
+                outputStream.write((checkBoxNewCar.isChecked.toString() + "\n").toByteArray())
+                outputStream.write((carNumberIntInput.text.toString() + "\n").toByteArray())
+                outputStream.write((driverNameTextInput.text.toString() + "\n").toByteArray())
+            }
+        } ?: throw Exception("error save casj")
+    }
+    private fun test()
+    {
+
+
+
+    }
     private  fun loadInputs()
     {
         val carNameTextInput = findViewById<EditText>(R.id.carNameAdd)
@@ -158,35 +199,49 @@ class MainActivity : AppCompatActivity() {
         val carNumberIntInput = findViewById<EditText>(R.id.carMiliageAdd)
         val checkBoxNewCar = findViewById<CheckBox>(R.id.carTypeAdd)
 
-        try {
-            val file = File(filesDir, "mainActivityCache.dat")
-            if (!file.exists()) {
-                toastShow("Файл не существует")
-                return
+        val resolver = this.contentResolver
+
+        val fileName = "mainActivityCache.dat"
+        val relativePath = Environment.DIRECTORY_DOWNLOADS
+
+        val queryUri = MediaStore.Files.getContentUri("external")
+
+        val selection = "${MediaStore.Files.FileColumns.DISPLAY_NAME} = ? AND ${MediaStore.Files.FileColumns.RELATIVE_PATH} = ?"
+        val selectionArgs = arrayOf(fileName, "$relativePath/")
+
+        val cursor = resolver.query(
+            queryUri,
+            arrayOf(MediaStore.Files.FileColumns._ID), // Берём только ID файла
+            selection,
+            selectionArgs,
+            null
+        )
+
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val fileId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+                val fileUri = ContentUris.withAppendedId(queryUri, fileId)
+                resolver.openInputStream(fileUri).use { inputStream->
+                    var buf = inputStream!!.readBytes()
+
+                    val splitString = String(buf).split("\n")
+                    val dataList = ArrayList<String>(splitString)
+
+                    try {
+                        carNameTextInput.setText(dataList[0])
+                        checkBoxNewCar.isChecked = dataList[1].toBoolean()
+                        carNumberIntInput.setText(dataList[2])
+                        driverNameTextInput.setText(dataList[3])
+                        toastShow(dataList[0])
+                        toastShow(dataList[1])
+                        toastShow(dataList[2])
+                        toastShow(dataList[3])
+
+                    } catch (e: IndexOutOfBoundsException) {
+                        toastShow("load cashe errror")
+                    }
+                }
             }
-
-            val fos = FileInputStream(file)
-            val buf = fos.readBytes()
-
-            val splitString = String(buf).split("\n")
-            val dataList = ArrayList<String>(splitString)
-
-            try {
-              carNameTextInput.setText(dataList[0])
-              checkBoxNewCar.isChecked = dataList[1].toBoolean()
-              carNumberIntInput.setText(dataList[2])
-              driverNameTextInput.setText(dataList[3])
-
-            } catch (e: IndexOutOfBoundsException) {
-                toastShow("Ошибка при сохранении данных")
-            }
-
-            fos.close()
-
-            toastShow("Данные сохранены в файл")
-        } catch (e: IOException) {
-            e.printStackTrace()
-            toastShow("Ошибка при сохранении данных")
         }
     }
 
@@ -195,5 +250,4 @@ class MainActivity : AppCompatActivity() {
 
 
 }
-
 

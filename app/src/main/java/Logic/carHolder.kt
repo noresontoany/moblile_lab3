@@ -70,13 +70,12 @@ class carHolder : Application(), LifecycleObserver {
         saveAllData()
     }
 
-
-
     fun saveAllData()
     {
         saveData()
         saveFilters()
     }
+
     fun saveFilters()
     {
         val workbook : Workbook = HSSFWorkbook()
@@ -98,13 +97,13 @@ class carHolder : Application(), LifecycleObserver {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, CARS_SHARED_FILE_NAME) // Имя файла
             put(
-                MediaStore.MediaColumns.MIME_TYPE,
-                "application/vnd.ms-excel"
-            )
-            put(
                 MediaStore.MediaColumns.RELATIVE_PATH,
                 Environment.DIRECTORY_DOCUMENTS
             ) // Путь в Shared Storage
+            put(
+                MediaStore.MediaColumns.MIME_TYPE,
+                "application/vnd.ms-excel"
+            )
         }
 
         // Создаем URI для файла
@@ -167,9 +166,11 @@ class carHolder : Application(), LifecycleObserver {
         val sheet = workbook.createSheet("Cars") // Создаем лист с именем "Пример"
         val arr = cars.value
         val row = sheet.createRow(0)
+
         for ((i, el) in Car::class.declaredMemberProperties.withIndex()) {
             row.createCell(i).setCellValue(el.name)
         }
+
         for (i in 0..<arr!!.size) {
             val row = sheet.createRow(i + 1) // Создаем первую строку
             for ((j, el) in Car::class.declaredMemberProperties.withIndex()) {

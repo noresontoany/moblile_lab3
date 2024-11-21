@@ -3,17 +3,14 @@ package com.example.lab_3
 import Interfaces.OnItemClickListner
 import Logic.carHolder
 import Views.CustomRecyclerAdapter
+import android.R.layout
 import android.content.Intent
 import android.os.Bundle
 import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.ListView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
@@ -32,7 +29,7 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
     private var lastRedactedId = ""
     companion object {
         const val IDM_DELETE = 101
-        const val IDM = 102
+        const val IDM_CREATE_BAT = 102
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +40,6 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
-
         }
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation2)
 
@@ -92,12 +88,12 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
 
     override fun onItemCLik(id: String) {
         val switchActivityIntent = Intent(
-                this,
-                carDescriptionActivity::class.java,
-                )
-            lastRedactedId = id
-            switchActivityIntent.putExtra("id", lastRedactedId)
-            startActivity(switchActivityIntent)
+            this,
+            carDescriptionActivity::class.java,
+        )
+        lastRedactedId = id
+        switchActivityIntent.putExtra("id", lastRedactedId)
+        startActivity(switchActivityIntent)
 
     }
 

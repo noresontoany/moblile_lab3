@@ -45,16 +45,10 @@ class carDescriptionActivity : AppCompatActivity() {
         carData.getSharedData().observe(this) { data ->
 
             car = carData.getCar(idCar)
-
-
-
             text_Name.hint = car.name
             text_DriverName.hint = car.driverName
             text_CarMiliage.hint = car.carMiliage.toString()
             check_carType.isChecked = car.carType
-
-
-
         }
 
 
