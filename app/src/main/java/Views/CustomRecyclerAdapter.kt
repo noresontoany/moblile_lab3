@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.compose.ui.window.application
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lab_3.R
@@ -50,11 +51,13 @@ class CustomRecyclerAdapter(private val listener: OnItemClickListner): RecyclerV
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
         holder.updateButton.setOnClickListener {
-            listener.onItemCLik(showData[position].id)
+            val carPos = data.indexOf(showData[position])
+            listener.onItemCLik(data[carPos].id)
         }
 
         holder.imageView.setOnClickListener{
-            listener.onContextMenu(holder.imageView, showData[position].id)
+            val carPos = data.indexOf(showData[position])
+            listener.onContextMenu(holder.imageView, data[carPos].id)
         }
 
 

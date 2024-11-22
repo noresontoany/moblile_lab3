@@ -148,7 +148,7 @@ class MainActivity : AppCompatActivity() {
 
         val cursor = resolver.query(
             queryUri,
-            arrayOf(MediaStore.Files.FileColumns._ID), // Берём только ID файла
+            arrayOf(MediaStore.Files.FileColumns._ID),
             selection,
             selectionArgs,
             null
@@ -211,7 +211,7 @@ class MainActivity : AppCompatActivity() {
 
         val cursor = resolver.query(
             queryUri,
-            arrayOf(MediaStore.Files.FileColumns._ID), // Берём только ID файла
+            arrayOf(MediaStore.Files.FileColumns._ID),
             selection,
             selectionArgs,
             null
@@ -232,10 +232,6 @@ class MainActivity : AppCompatActivity() {
                         checkBoxNewCar.isChecked = dataList[1].toBoolean()
                         carNumberIntInput.setText(dataList[2])
                         driverNameTextInput.setText(dataList[3])
-                        toastShow(dataList[0])
-                        toastShow(dataList[1])
-                        toastShow(dataList[2])
-                        toastShow(dataList[3])
 
                     } catch (e: IndexOutOfBoundsException) {
                         toastShow("load cashe errror")

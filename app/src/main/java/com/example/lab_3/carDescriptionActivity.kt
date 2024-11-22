@@ -43,7 +43,6 @@ class carDescriptionActivity : AppCompatActivity() {
         var car = carData.getCar(idCar!!)
 
         carData.getSharedData().observe(this) { data ->
-
             car = carData.getCar(idCar)
             text_Name.hint = car.name
             text_DriverName.hint = car.driverName
