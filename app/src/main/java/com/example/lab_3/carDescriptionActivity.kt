@@ -27,12 +27,8 @@ class carDescriptionActivity : AppCompatActivity() {
             insets
         }
 
-        val idCar = intent.getStringExtra("id")
+        val idCar = intent.getLongExtra("id", -1)
 
-        if (idCar == "-1") {
-            Toast.makeText(this, "ahahahaha", Toast.LENGTH_SHORT).show()
-            finish()
-        }
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation3)
         val text_Name = findViewById<EditText>(R.id.carNameEdit)
         val text_DriverName = findViewById<EditText>(R.id.driverNameEdit)
@@ -44,10 +40,10 @@ class carDescriptionActivity : AppCompatActivity() {
 
         carData.getSharedData().observe(this) { data ->
             car = carData.getCar(idCar)
-            text_Name.hint = car.name
-            text_DriverName.hint = car.driverName
-            text_CarMiliage.hint = car.carMiliage.toString()
-            check_carType.isChecked = car.carType
+            text_Name.hint = car!!.name
+            text_DriverName.hint = car!!.driverName
+            text_CarMiliage.hint = car!!.carMiliage.toString()
+            check_carType.isChecked = car!!.carType
         }
 
 
@@ -60,8 +56,21 @@ class carDescriptionActivity : AppCompatActivity() {
                 Toast.makeText(this, "Имя занято !!", Toast.LENGTH_SHORT).show()
             }
             else {
-                val newCar = createCar(text_Name, text_DriverName, text_CarMiliage, check_carType, car)
-                carData.updateCar(idCar, newCar)
+                var carName = text_Name.text.toString()
+                if(carName.isEmpty())
+                    carName = car!!.name.toString()
+
+                var carDriverName = text_DriverName.text.toString()
+                if (carDriverName.isEmpty())
+                    carDriverName = car!!.driverName.toString()
+
+                var cType = check_carType.isChecked
+
+                var carCarMiliage = text_CarMiliage.text.toString()
+                if (carCarMiliage.isEmpty())
+                    carCarMiliage = car!!.carMiliage.toString()
+
+                carData.updateCar(idCar, carName, cType, carCarMiliage.toInt(), carDriverName)
                 text_Name.text.clear()
                 text_DriverName.text.clear()
                 text_CarMiliage.text.clear()
@@ -84,36 +93,7 @@ class carDescriptionActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
-
-
-
-
     }
-
-    private fun createCar(name: EditText, driverName: EditText, carMiliage: EditText, carType:CheckBox, car:Car):Car
-    {
-//        val newCar = Car(name.text.toString()?:car.name, carType.isChecked.toString().toBoolean(),
-//            carMiliage.text.toString().toInt()?:carMiliage.hint.toString().toInt(),  driverName.text.toString()?:driverName.hint.toString())
-
-        var carName = name.text.toString()
-        if(carName.isEmpty())
-            carName = car.name.toString()
-
-        var carDriverName = driverName.text.toString()
-        if (carDriverName.isEmpty())
-            carDriverName = car.driverName.toString()
-
-        var cType = carType.isChecked
-
-        var carCarMiliage = carMiliage.text.toString()
-        if (carCarMiliage.isEmpty())
-            carCarMiliage = car.carMiliage.toString()
-
-        val newCar = Car(carName, cType, carCarMiliage.toInt(), carDriverName)
-        return newCar
-    }
-
     override fun onRestart() {
 
         super.onRestart()

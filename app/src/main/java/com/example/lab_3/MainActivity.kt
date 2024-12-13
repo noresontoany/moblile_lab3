@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Intent
+import android.database.sqlite.SQLiteOpenHelper
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import data.FeedReaderDbHelper
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -46,19 +48,22 @@ class MainActivity : AppCompatActivity() {
         val addButton = findViewById<Button>(R.id.addCArBtn)
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         val buttonSaveFile = findViewById<Button>(R.id.buttonSaveFile)
-        loadInputs()
+//        loadInputs()
         val menu = bottomNavigationView.menu
         val addItem = menu.findItem(R.id.navigation_add)
         addItem.isVisible = false
+
 
         val carData: carHolder = application as carHolder
         carData.getSharedData().observe(this) { data ->
             val tempCarNames = carData.getCarNames()
             carNames = tempCarNames
         }
+
         buttonSaveFile.setOnClickListener {
             carData.saveFile()
         }
+
         addButton.setOnClickListener {
             val carName = carNameTextInput.text.toString()
             if (carName.isEmpty() || carNumberIntInput.text.toString().isEmpty()||driverNameTextInput.text.toString().isEmpty()) {
@@ -73,8 +78,8 @@ class MainActivity : AppCompatActivity() {
                     mode = true
                     carType = "Электрокар"
                 }
-                val newCar = Car(carName,mode, carNumberIntInput.text.toString().toInt(),driverNameTextInput.text.toString())
-                carData.addCars(newCar)
+
+                carData.addCar(carName,mode, carNumberIntInput.text.toString().toInt(),driverNameTextInput.text.toString())
                 toastShow("$carType $carName успешно добавлен")
             }
 
@@ -118,7 +123,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
-        loadInputs()
+//        loadInputs()
         test()
         super.onResume()
     }
@@ -192,54 +197,54 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-    private  fun loadInputs()
-    {
-        val carNameTextInput = findViewById<EditText>(R.id.carNameAdd)
-        val driverNameTextInput = findViewById<EditText>(R.id.driverNameAdd)
-        val carNumberIntInput = findViewById<EditText>(R.id.carMiliageAdd)
-        val checkBoxNewCar = findViewById<CheckBox>(R.id.carTypeAdd)
-
-        val resolver = this.contentResolver
-
-        val fileName = "mainActivityCache.dat"
-        val relativePath = Environment.DIRECTORY_DOWNLOADS
-
-        val queryUri = MediaStore.Files.getContentUri("external")
-
-        val selection = "${MediaStore.Files.FileColumns.DISPLAY_NAME} = ? AND ${MediaStore.Files.FileColumns.RELATIVE_PATH} = ?"
-        val selectionArgs = arrayOf(fileName, "$relativePath/")
-
-        val cursor = resolver.query(
-            queryUri,
-            arrayOf(MediaStore.Files.FileColumns._ID),
-            selection,
-            selectionArgs,
-            null
-        )
-
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val fileId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
-                val fileUri = ContentUris.withAppendedId(queryUri, fileId)
-                resolver.openInputStream(fileUri).use { inputStream->
-                    var buf = inputStream!!.readBytes()
-
-                    val splitString = String(buf).split("\n")
-                    val dataList = ArrayList<String>(splitString)
-
-                    try {
-                        carNameTextInput.setText(dataList[0])
-                        checkBoxNewCar.isChecked = dataList[1].toBoolean()
-                        carNumberIntInput.setText(dataList[2])
-                        driverNameTextInput.setText(dataList[3])
-
-                    } catch (e: IndexOutOfBoundsException) {
-                        toastShow("load cashe errror")
-                    }
-                }
-            }
-        }
-    }
+//    private  fun loadInputs()
+//    {
+//        val carNameTextInput = findViewById<EditText>(R.id.carNameAdd)
+//        val driverNameTextInput = findViewById<EditText>(R.id.driverNameAdd)
+//        val carNumberIntInput = findViewById<EditText>(R.id.carMiliageAdd)
+//        val checkBoxNewCar = findViewById<CheckBox>(R.id.carTypeAdd)
+//
+//        val resolver = this.contentResolver
+//
+//        val fileName = "mainActivityCache.dat"
+//        val relativePath = Environment.DIRECTORY_DOWNLOADS
+//
+//        val queryUri = MediaStore.Files.getContentUri("external")
+//
+//        val selection = "${MediaStore.Files.FileColumns.DISPLAY_NAME} = ? AND ${MediaStore.Files.FileColumns.RELATIVE_PATH} = ?"
+//        val selectionArgs = arrayOf(fileName, "$relativePath/")
+//
+//        val cursor = resolver.query(
+//            queryUri,
+//            arrayOf(MediaStore.Files.FileColumns._ID),
+//            selection,
+//            selectionArgs,
+//            null
+//        )
+//
+//        cursor?.use {
+//            if (it.moveToFirst()) {
+//                val fileId = it.getLong(it.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+//                val fileUri = ContentUris.withAppendedId(queryUri, fileId)
+//                resolver.openInputStream(fileUri).use { inputStream->
+//                    var buf = inputStream!!.readBytes()
+//
+//                    val splitString = String(buf).split("\n")
+//                    val dataList = ArrayList<String>(splitString)
+//
+//                    try {
+//                        carNameTextInput.setText(dataList[0])
+//                        checkBoxNewCar.isChecked = dataList[1].toBoolean()
+//                        carNumberIntInput.setText(dataList[2])
+//                        driverNameTextInput.setText(dataList[3])
+//
+//                    } catch (e: IndexOutOfBoundsException) {
+//                        toastShow("load cashe errror")
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 
 

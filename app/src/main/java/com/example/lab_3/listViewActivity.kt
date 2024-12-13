@@ -3,7 +3,6 @@ package com.example.lab_3
 import Interfaces.OnItemClickListner
 import Logic.carHolder
 import Views.CustomRecyclerAdapter
-import android.R.layout
 import android.content.Intent
 import android.os.Bundle
 import android.view.ContextMenu
@@ -25,11 +24,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class listViewActivity : AppCompatActivity(), OnItemClickListner {
     private lateinit var adapter: CustomRecyclerAdapter
-    private var selectedItemId = ""
-    private var lastRedactedId = ""
+    private var selectedItemId:Long = (-1).toLong()
+    private var lastRedactedId:Long = (-1).toLong()
     companion object {
         const val IDM_DELETE = 101
-        const val IDM_CREATE_BAT = 102
+        const val IDM_MMM = 102
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +85,7 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
     }
 
 
-    override fun onItemCLik(id: String) {
+    override fun onItemCLik(id: Long) {
         val switchActivityIntent = Intent(
             this,
             carDescriptionActivity::class.java,
@@ -97,10 +96,9 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
 
     }
 
-    override fun onContextMenu(view: ImageView, id: String) {
-        registerForContextMenu(view)
+    override fun onContextMenu(imageView: ImageView, id: Long) {
+        registerForContextMenu(imageView)
         selectedItemId = id
-        Toast.makeText(this, selectedItemId, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateContextMenu(
@@ -111,16 +109,14 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
         super.onCreateContextMenu(menu, v, menuInfo)
 
         menu?.add(Menu.NONE, IDM_DELETE, Menu.NONE, "Удалить")
-
-
     }
     override fun onContextItemSelected(item: MenuItem): Boolean {
 
         return when (item.itemId) {
             IDM_DELETE -> {
-                if (selectedItemId != "") {
+                if (selectedItemId.toInt() != -1) {
                     val carData = application as carHolder
-                    carData.deleteCar(selectedItemId) // удаляем элемент
+                    carData.deleteCar(selectedItemId)
                     Toast.makeText(this, "Элемент удален", Toast.LENGTH_SHORT).show()
                 }
                 false
@@ -129,7 +125,7 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
         }
     }
 
-    override fun onMenuItemCLick(men: MenuItem) {
+    override fun onMenuItemCLick(item: MenuItem) {
         Toast.makeText(this, "ЕЩЕ РАЗ", Toast.LENGTH_SHORT).show()
     }
 
@@ -158,9 +154,6 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
                 dialog.dismiss() // Закрыть диалог при отмене
             }
             .show()
-
-//        carData.cars.value = carData.cars.value
-//        carData.saveFilterData()
     }
     private fun applyFiltersAndSort(checkedItems: BooleanArray) {
         if (checkedItems[0]) sortCarsByDescending() // Sort by Descending
@@ -171,10 +164,6 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
     private fun sortCarsByDescending() {
         Toast.makeText(this, "Sorted by Descending Mileage", Toast.LENGTH_SHORT).show()
     }
-
-//    private fun showAllCars() {
-//        Toast.makeText(this, "Showing All Cars", Toast.LENGTH_SHORT).show()
-//    }
 
     private fun showOnlyElectricCars() {
 
