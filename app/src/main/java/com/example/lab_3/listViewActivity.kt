@@ -3,8 +3,10 @@ package com.example.lab_3
 import Interfaces.OnItemClickListner
 import Logic.carHolder
 import Views.CustomRecyclerAdapter
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
@@ -16,19 +18,33 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import data.models.Brand
+import data.models.Model
+import data.models.Price
+import data.repository.CarRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import okio.IOException
+import retrofit2.HttpException
+import java.util.concurrent.Executors
 
 
 class listViewActivity : AppCompatActivity(), OnItemClickListner {
     private lateinit var adapter: CustomRecyclerAdapter
     private var selectedItemId:Long = (-1).toLong()
     private var lastRedactedId:Long = (-1).toLong()
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
     companion object {
         const val IDM_DELETE = 101
-        const val IDM_MMM = 102
+        const val IDM_PRICE = 102
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +100,7 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
 
     }
 
+    private var filterThread: Thread? = null
 
     override fun onItemCLik(id: Long) {
         val switchActivityIntent = Intent(
@@ -93,7 +110,6 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
         lastRedactedId = id
         switchActivityIntent.putExtra("id", lastRedactedId)
         startActivity(switchActivityIntent)
-
     }
 
     override fun onContextMenu(imageView: ImageView, id: Long) {
@@ -109,15 +125,22 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
         super.onCreateContextMenu(menu, v, menuInfo)
 
         menu?.add(Menu.NONE, IDM_DELETE, Menu.NONE, "Удалить")
+        menu?.add(Menu.NONE, IDM_PRICE, Menu.NONE, "Узнать цену")
     }
-    override fun onContextItemSelected(item: MenuItem): Boolean {
+    override  fun onContextItemSelected(item: MenuItem): Boolean {
 
         return when (item.itemId) {
             IDM_DELETE -> {
                 if (selectedItemId.toInt() != -1) {
                     val carData = application as carHolder
-                    carData.deleteCar(selectedItemId)
-                    Toast.makeText(this, "Элемент удален", Toast.LENGTH_SHORT).show()
+                    val msg = carData.deleteCar(selectedItemId)
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                }
+                false
+            }
+            IDM_PRICE -> {
+                if (selectedItemId.toInt() != -1) {
+                    getPrice()
                 }
                 false
             }
@@ -129,50 +152,92 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
         Toast.makeText(this, "ЕЩЕ РАЗ", Toast.LENGTH_SHORT).show()
     }
 
-
-
-
-
+    @SuppressLint("NotifyDataSetChanged")
     private fun showFilterSortDialog() {
         val carData = application as carHolder
         val items = carData.filters_names
-        val checkedItems = carData.filters
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Filter and Sort Options")
-            .setMultiChoiceItems(items, checkedItems) { dialog, which, isChecked ->
-                // Обновляем состояние выбранного элемента
+        val checkedItems = carData.filters.copyOf()
+
+        AlertDialog.Builder(this)
+            .setTitle("Filter and Sort Options")
+            .setMultiChoiceItems(items, checkedItems) { _, which, isChecked ->
                 checkedItems[which] = isChecked
             }
-            .setPositiveButton("Apply") { dialog, _ ->
+            .setPositiveButton("Apply") { _, _ ->
                 carData.filters = checkedItems
                 adapter.filters = checkedItems
-                adapter.filter()
-                applyFiltersAndSort(checkedItems)
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
 
-                dialog.dismiss() // Закрыть диалог при отмене
+
+                filterThread?.interrupt()
+
+                filterThread = Thread {
+                    try {
+                        val filteredList = adapter.filterInBackground()
+
+                        if (!Thread.interrupted()) {
+                            runOnUiThread {
+                                if (!isDestroyed) {
+                                    adapter.showData = filteredList
+                                    adapter.notifyDataSetChanged()
+                                    showFilterToasts(checkedItems)
+                                }
+                            }
+                        }
+                    } catch (e: InterruptedException) {
+                        Log.d("Thread1", "Фильтрация отменена")
+                    }
+                }.apply {
+                    start()
+                }
             }
+            .setNegativeButton("Cancel", null)
             .show()
     }
-    private fun applyFiltersAndSort(checkedItems: BooleanArray) {
-        if (checkedItems[0]) sortCarsByDescending() // Sort by Descending
-        if (checkedItems[1]) showOnlyElectricCars() // Show Only Electric Cars
-        if (checkedItems[2]) showOnlyNonElectricCars() // Show Only Non-Electric Cars
+
+    private fun showFilterToasts(checkedItems: BooleanArray) {
+        if (checkedItems[0]) Toast.makeText(this, "Sorted by mileage", Toast.LENGTH_SHORT).show()
+        if (checkedItems[1]) Toast.makeText(this, "Electric only", Toast.LENGTH_SHORT).show()
+        if (checkedItems[2]) Toast.makeText(this, "Non-electric only", Toast.LENGTH_SHORT).show()
     }
 
-    private fun sortCarsByDescending() {
-        Toast.makeText(this, "Sorted by Descending Mileage", Toast.LENGTH_SHORT).show()
+    override fun onDestroy() {
+        super.onDestroy()
+        filterThread?.interrupt()
     }
 
-    private fun showOnlyElectricCars() {
-
-        Toast.makeText(this, "Showing Only Electric Cars", Toast.LENGTH_SHORT).show()
+    override fun onPause() {
+        super.onPause()
+        filterThread?.interrupt()
     }
 
-    private fun showOnlyNonElectricCars() {
-        Toast.makeText(this, "Showing Only Non-Electric Cars", Toast.LENGTH_SHORT).show()
-    }
 
+    fun getPrice() {
+        lifecycleScope.launch {
+            val repo = CarRepository()
+            try {
+                val response = repo.getPrice(59, 5940, "2014-3")
+                Log.d("API_RESPONSE", "Marca: ${response.Marca}, Valor: ${response.Valor}")
+                Log.d("API_RESPONSE_FULL", response.toString())
+
+                runOnUiThread {
+                    Toast.makeText(
+                        this@listViewActivity,
+                        "${response.Marca} ${response.Modelo}: ${response.Valor}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+            catch (e: HttpException) {
+                Log.e("API_ERROR", "HTTP error: ${e.code()}", e)
+            } catch (e: IOException) {
+                Log.e("API_ERROR", "Network error", e)
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Unexpected error", e)
+            }
+            catch (e: Exception) {
+                Log.e("API_ERROR", "Error: ${e.message}", e)
+            }
+        }
+    }
 
 }

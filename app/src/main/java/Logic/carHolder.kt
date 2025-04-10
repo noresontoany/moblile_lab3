@@ -19,7 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Workbook
 import java.io.File
 import kotlin.reflect.full.declaredMemberProperties
-
+import kotlinx.coroutines.*
 class carHolder : Application(), LifecycleObserver {
     val cars: MutableLiveData<List<Car>> = MutableLiveData()
     val filters_names = arrayOf(
@@ -160,9 +160,9 @@ class carHolder : Application(), LifecycleObserver {
     private fun loadCarsFromDatabase() {
         val dbHelper = FeedReaderDbHelper(this)
         val db = dbHelper.readableDatabase
-        cars.value = getAllCars(db)
+        val newCarsList = getAllCars(db)
+        cars.postValue(newCarsList)
     }
-
     private fun getAllCars(db: SQLiteDatabase): List<Car> {
         val carList = mutableListOf<Car>()
 
@@ -197,6 +197,7 @@ class carHolder : Application(), LifecycleObserver {
 
 
     fun addCar(name: String?, carType: Boolean, carMileage: Int, driverName: String?) {
+
         val dbHelper = FeedReaderDbHelper(this)
         val db = dbHelper.writableDatabase
 
@@ -260,15 +261,23 @@ class carHolder : Application(), LifecycleObserver {
     }
 
 
-    fun deleteCar(id: Long) {
-        val dbHelper = FeedReaderDbHelper(this)
-        val db = dbHelper.writableDatabase
+    fun deleteCar(id: Long) : String{
+        try {
 
-        val selection = "${CarContract.CarEntry._ID} = ?"
-        val selectionArgs = arrayOf(id.toString())
 
-        db.delete(CarContract.CarEntry.TABLE_NAME, selection, selectionArgs)
-        loadCarsFromDatabase()
+            val dbHelper = FeedReaderDbHelper(this)
+            val db = dbHelper.writableDatabase
+
+            val selection = "${CarContract.CarEntry._ID} = ?"
+            val selectionArgs = arrayOf(id.toString())
+
+            db.delete(CarContract.CarEntry.TABLE_NAME, selection, selectionArgs)
+            loadCarsFromDatabase()
+        }
+        catch (e: Exception) {
+            return "Ошибка при удалении"
+        }
+        return "Элемент удален"
     }
     fun getCar(id: Long): Car? {
         return cars.value?.find { it.id == id }

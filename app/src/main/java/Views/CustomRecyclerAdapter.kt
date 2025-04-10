@@ -3,6 +3,7 @@ package Views
 import Interfaces.OnItemClickListner
 import Logic.Car
 import Logic.carHolder
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,6 +94,7 @@ class CustomRecyclerAdapter(private val listener: OnItemClickListner): RecyclerV
         return filteredList
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun filter()
     {
 
@@ -115,6 +117,10 @@ class CustomRecyclerAdapter(private val listener: OnItemClickListner): RecyclerV
 
         showData = filteredList
         notifyDataSetChanged()
+    }
+
+    fun filterInBackground(): List<Car> {
+        return filter(data)
     }
 
 

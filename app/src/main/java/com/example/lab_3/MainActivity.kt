@@ -1,15 +1,14 @@
 package com.example.lab_3
 
-import Logic.Car
 import Logic.carHolder
 import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Intent
-import android.database.sqlite.SQLiteOpenHelper
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -18,13 +17,24 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import data.FeedReaderDbHelper
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.Blocking
+import kotlin.coroutines.cancellation.CancellationException
 
 
 class MainActivity : AppCompatActivity() {
@@ -64,27 +74,6 @@ class MainActivity : AppCompatActivity() {
             carData.saveFile()
         }
 
-        addButton.setOnClickListener {
-            val carName = carNameTextInput.text.toString()
-            if (carName.isEmpty() || carNumberIntInput.text.toString().isEmpty()||driverNameTextInput.text.toString().isEmpty()) {
-                toastShow("Строка пуста")
-            } else if (carName in carNames) {
-                toastShow("Имя уже занято")
-            } else {
-                var mode = false
-                var carType = "Автомобиль"
-                if (checkBoxNewCar.isChecked)
-                {
-                    mode = true
-                    carType = "Электрокар"
-                }
-
-                carData.addCar(carName,mode, carNumberIntInput.text.toString().toInt(),driverNameTextInput.text.toString())
-                toastShow("$carType $carName успешно добавлен")
-            }
-
-        }
-
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_view -> {
@@ -100,33 +89,65 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        addButton.setOnClickListener {
+            coroutineScope.launch {
+                try {
+                    val message = addCarToDB(
+                        carNameTextInput.text.toString(),
+                        checkBoxNewCar.isChecked,
+                        carNumberIntInput.text.toString(),
+                        driverNameTextInput.text.toString(),
+                        carNames,
+                        carData
+                    )
+                    toastShow(message)
+                } catch (e: Exception) {
+                    Log.e("Coroutine", "Ошибка при добавлении автомобиля", e)
+                }
+            }
+        }
     }
 
-    override fun onPause() {
-        saveInputs()
-        super.onPause()
+    suspend fun addCarToDB(
+        carName: String,
+        mode: Boolean,
+        carNumber: String,
+        driverName: String,
+        carNames: Set<String>,
+        carData: carHolder
+    ): String = withContext(Dispatchers.IO) {
+        val carType = if (mode) "Электрокар" else "Автомобиль"
+        when {
+            carName.isEmpty() || carNumber.isEmpty() || driverName.isEmpty() ->
+                "Строка пуста"
+            carName in carNames ->
+                "Имя уже занято"
+            else -> {
+                carData.addCar(
+                    carName,
+                    mode,
+                    carNumber.toIntOrNull() ?: 0,
+                    driverName
+                )
+                "$carType $carName успешно добавлен"
+            }
+        }
     }
+
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     override fun onDestroy() {
         saveInputs()
+        coroutineScope.cancel()
         super.onDestroy()
     }
 
-    override fun onStop() {
-        saveInputs()
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
+        coroutineScope.cancel()
     }
 
-    override fun finish() {
-        saveInputs()
-        super.finish()
-    }
-
-    override fun onResume() {
-//        loadInputs()
-        test()
-        super.onResume()
-    }
 
     private fun toastShow(message: String)
     {
