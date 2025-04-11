@@ -3203,6 +3203,7 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id brandSpinner
 id btnCarEdit
 id buttonPanel
 id buttonSaveFile
@@ -3393,6 +3394,7 @@ id matrix
 id message
 id middle
 id mini
+id modelSpinner
 id month_grid
 id month_navigation_bar
 id month_navigation_fragment_toggle
@@ -3479,6 +3481,7 @@ id pin
 id position
 id postLayout
 id pressed
+id priceText
 id progress_circular
 id progress_horizontal
 id radio
@@ -3627,6 +3630,7 @@ id wrap_content
 id wrap_content_constrained
 id x_left
 id x_right
+id yearSpinner
 integer abc_config_activityDefaultDur
 integer abc_config_activityShortDur
 integer app_bar_elevation_anim_duration
@@ -3760,6 +3764,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
+layout dialog_price
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout m3_alert_dialog

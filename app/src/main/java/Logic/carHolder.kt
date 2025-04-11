@@ -2,6 +2,7 @@
 
 package Logic
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ContentValues
 import android.content.Context
@@ -22,6 +23,13 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlinx.coroutines.*
 class carHolder : Application(), LifecycleObserver {
     val cars: MutableLiveData<List<Car>> = MutableLiveData()
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var context: Context
+            private set
+    }
+
     val filters_names = arrayOf(
         "Sort by Descending",
         "Show Only Electric Cars",
@@ -33,6 +41,7 @@ class carHolder : Application(), LifecycleObserver {
     private val CARS_SHARED_FILE_NAME = "carsAppInfo"
 
     override fun onCreate() {
+        context = applicationContext
         loadFilters()
         loadCarsFromDatabase()
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)

@@ -2,6 +2,7 @@ package com.example.lab_3
 
 import Interfaces.OnItemClickListner
 import Logic.carHolder
+import PriceDialog
 import Views.CustomRecyclerAdapter
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -210,34 +211,9 @@ class listViewActivity : AppCompatActivity(), OnItemClickListner {
         filterThread?.interrupt()
     }
 
-
     fun getPrice() {
-        lifecycleScope.launch {
-            val repo = CarRepository()
-            try {
-                val response = repo.getPrice(59, 5940, "2014-3")
-                Log.d("API_RESPONSE", "Marca: ${response.Marca}, Valor: ${response.Valor}")
-                Log.d("API_RESPONSE_FULL", response.toString())
-
-                runOnUiThread {
-                    Toast.makeText(
-                        this@listViewActivity,
-                        "${response.Marca} ${response.Modelo}: ${response.Valor}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-            catch (e: HttpException) {
-                Log.e("API_ERROR", "HTTP error: ${e.code()}", e)
-            } catch (e: IOException) {
-                Log.e("API_ERROR", "Network error", e)
-            } catch (e: Exception) {
-                Log.e("API_ERROR", "Unexpected error", e)
-            }
-            catch (e: Exception) {
-                Log.e("API_ERROR", "Error: ${e.message}", e)
-            }
-        }
+        val dialog = PriceDialog()
+        dialog.show(supportFragmentManager, "priceDialog")
     }
 
 }

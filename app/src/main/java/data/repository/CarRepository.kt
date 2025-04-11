@@ -1,5 +1,6 @@
 package data.repository
 
+import android.util.Log
 import data.api.RetrofitClient
 import data.models.Brand
 import data.models.Model
@@ -14,7 +15,9 @@ class CarRepository {
     }
 
     suspend fun getModels(id: Int) : List<Model> {
-        return apiService.getModels(id)
+        val response = apiService.getModels(id)
+        Log.d("API_RESPONSE", response.toString())
+        return response.modelos
     }
 
     suspend fun getYears(id: Int, modelId: Int): List<Year>{
@@ -24,7 +27,6 @@ class CarRepository {
     suspend fun getPrice(id: Int, modelId: Int, year: String) : Price {
         return apiService.getPrice(id, modelId, year)
     }
-
 
 
 }

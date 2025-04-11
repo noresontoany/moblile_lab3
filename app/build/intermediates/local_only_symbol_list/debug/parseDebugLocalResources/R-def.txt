@@ -13,6 +13,7 @@ id addCArBtn
 id bottom_navigation
 id bottom_navigation2
 id bottom_navigation3
+id brandSpinner
 id btnCarEdit
 id buttonSaveFile
 id buttonUpdate
@@ -30,13 +31,17 @@ id linearDescription
 id linearDescription2
 id linearLayout2
 id main
+id modelSpinner
 id navigation_add
 id navigation_view
+id priceText
 id recyclerView
 id textViewCar
+id yearSpinner
 layout activity_car_description
 layout activity_list_view
 layout activity_main
+layout dialog_price
 layout recyclerview_item
 menu bottom_nav_menu
 mipmap ic_launcher

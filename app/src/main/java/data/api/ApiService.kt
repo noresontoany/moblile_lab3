@@ -1,5 +1,6 @@
 package data.api
 
+import ModelosResponse
 import data.models.Brand
 import data.models.Model
 import data.models.Price
@@ -13,7 +14,7 @@ interface ApiService {
     suspend fun getBrands(): List<Brand>
 
     @GET("marcas/{id}/modelos")
-    suspend fun getModels(@Path("id") id: Int): List<Model>
+    suspend fun getModels(@Path("id") id: Int): ModelosResponse
 
     @GET("marcas/{id}/modelos/{modelId}/anos")
     suspend fun getYears(@Path("id") id: Int, @Path("modelId") modelId : Int) : List<Year>

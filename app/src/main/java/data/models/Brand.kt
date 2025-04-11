@@ -1,7 +1,7 @@
 package data.models
 
 data class Brand (
-    var id: Int,
+    var codigo: Int,
     var nome: String
 )
 
